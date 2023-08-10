@@ -151,6 +151,7 @@
 		document.getElementById("supplyChange").addEventListener("change", supplyChangeUpdated);
 
 		function updateRange (){
+			emptyChartData();
 			calculateMaxRevenue(maxRevenue,priceOptions);
 			displayMessage();
 		}
@@ -186,6 +187,9 @@
 			if (revenue === maxRevenue) {
 				message = "This is the equilibrium price"
 			}
+			else{
+				message = chartData.messages[price-1];
+			}
 
 			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"Price per Widget: $"+price+" per unit<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
 		}
@@ -193,10 +197,12 @@
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
+					debugger;
 					
 					for (var i = minimum ; i <= maximum; i++) {
 						let consumption = i * Mdemand + Bdemand;
 						let supply = i * Msupply + Bsupply;
+						message = "";
 						chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
 						if (consumption > supply) {
 							consumption = supply;
@@ -216,6 +222,7 @@
 							"revenue":revenue
 						}
 						//setting up charting data to show the equilibrium price on a chart
+						chartData.messages.push(message);
 						chartData.revenue.push(revenue);
 						chartData.supply.push(supply);
 						chartData.labels.push("Price per Widget: $"+i)
@@ -240,6 +247,7 @@
 			chartData.supply = [];
 			chartData.demand = [];
 			chartData.labels = [];
+			chartData.messages = [];
 		}
 
 		function resetChart(){
