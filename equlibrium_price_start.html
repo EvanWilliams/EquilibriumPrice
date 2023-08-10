@@ -108,6 +108,7 @@
     	let Bdemand = 22000;
     	let Msupply = 2000; // what if ABC can hire more people when price goes up? 
     	let Bsupply = 2000;
+		let maxRevenue = 0;
     	let consumption;
     	let supply;
 		let revenue;
@@ -117,6 +118,7 @@
 			"revenue":[],
 			"supply":[],
 			"demand":[]}
+		let revenueObject = {};
 
 		const priceOptions = document.getElementsByName("price");
 		const ctx = document.getElementById('dataChart');
@@ -145,7 +147,12 @@
 			});
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
-		document.getElementById("price").addEventListener("change", calculateOutput);
+		document.getElementById("price").addEventListener("change", updateRange);
+
+		function updateRange (){
+			calculateMaxRevenue(maxRevenue,priceOptions);
+			displayMessage();
+		}
 		function addData(chart,labels, newData) {
 			chart.data.labels = labels;
 			chart.data.datasets.forEach((dataset) => {
@@ -169,14 +176,31 @@
 			});
 			chart.update();
 		}
-
-		function calculateOutput() {
-			let price;
-			let maxRevenue = 0;
-			let revenueObject = {};
+		function displayMessage(){
 			message = "";
+			price = priceOptions[0].value;
+			consumption = revenueObject[price].consumption;
+			supply = revenueObject[price].supply;
+			revenue = revenueObject[price].revenue;
 
-			const calculateMaxRevenue = (maxRevenue,priceOptions) => {
+			if (consumption > supply) {
+				consumption = supply;
+				message = "ABC Company cannot make enough XYZ Widgets";
+			}
+
+			if (consumption <= 0) {
+				consumption = 0;
+				message = "No one will buy XYZ Widgets at this price";
+			}
+
+			
+			if (revenue === maxRevenue) {
+				message = "This is the equilibrium price"
+			}
+
+			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"Price per Widget: $"+price+" per unit<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
+		}
+		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
@@ -205,33 +229,12 @@
 				}
 				return maxRevenue;
 			}
-
+		function calculateOutput() {
 			maxRevenue = calculateMaxRevenue(maxRevenue,priceOptions);
 			//chart reset to make sure that this fires on submit.
 			resetChart();
-			price = priceOptions[0].value;
 
-			consumption = revenueObject[price].consumption;
-			supply = revenueObject[price].supply;
-			revenue = revenueObject[price].revenue;
-
-			if (consumption > supply) {
-				consumption = supply;
-				message = "ABC Company cannot make enough XYZ Widgets";
-			}
-
-			if (consumption <= 0) {
-				consumption = 0;
-				message = "No one will buy XYZ Widgets at this price";
-			}
-
-			
-			if (revenue === maxRevenue) {
-				message = "This is the equilibrium price"
-			}
-
-			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"Price per Widget: $"+price+" per unit<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
-			
+			displayMessage();
 		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
 
 		function emptyChartData(){
