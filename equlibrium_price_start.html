@@ -8,6 +8,12 @@
     <style>
 		.chartWrapper{width:800px;height:400px;}
     	.container {margin:20px;padding:20px;background-color:#76D6FF;}
+		.graphControlWrapper{
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-row-gap: 5px;
+			padding: 30px 0px;
+		}
     	#result {color:#7A81FF;}
 
     	@media screen and (max-width: 700px) {
@@ -48,7 +54,16 @@
 		        <input type="radio" name="price" value=10> $10
 	        </div>
 
-	        <input id="calculate" type="button" value="Calculate">
+			<div class="graphControlWrapper">
+				Inital Demand<input type="text" value=22000 id="initalDemand">
+				Decrease in Demand per Dollar increase in price<input type="text" value=2000 id="demandChange">
+				Inital Supply<input type="text" value=2000 id="initalSupply">
+				Increase in Supply per Dollar increase in price<input type="text" value=2000 id="supplyChange">
+			</div>
+
+			<div>Click Calculate to generate a graph for your desired values.
+				<input id="calculate" type="button" value="Calculate">
+			</div>
 
 
 
@@ -56,7 +71,7 @@
 	    </form>
     </div>
 	<div class="chartWrapper">
-		<canvas id="myChart"></canvas>
+		<canvas id="dataChart"></canvas>
 	</div>
 	
     <div id="result" class="container">
@@ -70,16 +85,41 @@
     	//   Qsupply = Msupply * price + Bsupply
 		//   Qdemand = Mdemand * price + Bdemand
 
-    	let Mdemand = -1000;
-    	let Bdemand = 10000;
-    	let Msupply = 0; // what if ABC can hire more people when price goes up? 
-    	let Bsupply = 8000;
+    	let Mdemand = -2000;
+    	let Bdemand = 22000;
+    	let Msupply = 2000; // what if ABC can hire more people when price goes up? 
+    	let Bsupply = 2000;
     	let consumption;
     	let supply;
 		let revenue;
     	let message;
 
+		const ctx = document.getElementById('dataChart');
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
+
+		function addData(chart,labels, newData) {
+			chart.data.labels = labels;
+			chart.data.datasets.forEach((dataset) => {
+				if(dataset.label === 'Total Revenue'){
+					dataset.data = newData.revenue;
+				}
+				else if(dataset.label === 'Total Supply'){
+					dataset.data = newData.supply;
+				}
+				else if(dataset.label === 'Total Demand'){
+					dataset.data = newData.demand;
+				}
+			});
+			chart.update();
+		}
+
+		function removeData(chart) {
+			chart.data.labels = [];
+			chart.data.datasets.forEach((dataset) => {
+				dataset.data = [];
+			});
+			chart.update();
+		}
 
 		function calculateOutput() {
 			let price;
@@ -96,11 +136,20 @@
 
 			const calculateMaxRevenue = (maxRevenue,priceOption) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
-
+				chartData = {
+					"labels":[],
+					"revenue":[],
+					"supply":[],
+					"demand":[]
+				}
 				priceOptions.forEach( (priceOption) => {
 					let consumption = priceOption.value * Mdemand + Bdemand;
 					let supply = priceOption.value * Msupply + Bsupply;
 					let revenue = consumption * priceOption.value;
+
+					if(revenue < 0){
+						revenue = 0;
+					}
 
 					revenueObject[priceOption.value] = {
 						"consumption":consumption,
@@ -150,13 +199,11 @@
 			}
 
 			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"Price per Widget: $"+price+" per unit<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
-
-			const ctx = document.getElementById('myChart');
-
-
-			new Chart(ctx, {
+			
+			//Create the chart using Chart.js
+			const myChart = new Chart(ctx, {
 				data: {
-        			datasets: [
+					datasets: [
 						{
 							type: 'bar',
 							label: 'Total Revenue',
@@ -176,8 +223,22 @@
 					labels:chartData.labels
 				}
 			});
-			}
+			
+		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
 
+		function initalDemandChanged(event){
+			Bdemand = parseInt(event.target.value);
+			removeData(myChart);
+			calculateMaxRevenue();
+			//update the data for the chart refresh.
+			addData(myChart,chartData.labels,chartData);
+		}
+
+		function initalSupplyChanged(){}
+		function supplyChangeUpdated(){}
+		function demandChangeUpdated(){}
+		}
+	
     </script>
   </body>
 </html>
