@@ -66,21 +66,11 @@
 					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
 					<span><!-- half --></span>
 				</div>
-		        <!-- <input type="radio" name="price" value=1> $1
-		        <input type="radio" name="price" value=2> $2
-		        <input type="radio" name="price" value=3> $3
-		        <input type="radio" name="price" value=4> $4
-		        <input type="radio" name="price" value=5> $5
-		        <input type="radio" name="price" value=6> $6
-		        <input type="radio" name="price" value=7> $7
-		        <input type="radio" name="price" value=8> $8
-		        <input type="radio" name="price" value=9> $9
-		        <input type="radio" name="price" value=10> $10 -->
 	        </div>
 
 			<div class="graphControlWrapper">
 				Inital Demand (in Units)<input type="text" value=22000 id="initalDemand">
-				Decrease in Demand per Dollar increase in price<input type="text" value=2000 id="demandChange">
+				Decrease in Demand per Dollar increase in price<input type="text" value=-2000 id="demandChange">
 				Inital Supply (in Units)<input type="text" value=2000 id="initalSupply">
 				Increase in Supply per Dollar increase in price<input type="text" value=2000 id="supplyChange">
 			</div>
@@ -117,7 +107,7 @@
     	let consumption;
     	let supply;
 		let revenue;
-    	let message;
+    	let message = "";
 		chartData = {
 			"labels":[],
 			"revenue":[],
@@ -133,17 +123,17 @@
 					datasets: [
 						{
 							type: 'bar',
-							label: 'Total Revenue',
+							label: 'Revenue',
 							data: chartData.revenue,
 						},
 						{
 							type: 'line',
-							label: 'Total Supply',
+							label: 'Supply',
 							data: chartData.supply,
 						},
 						{
 							type: 'line',
-							label: 'Total Demand',
+							label: 'Demand',
 							data: chartData.demand,
 						}
 				],
@@ -154,6 +144,9 @@
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
 		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
+		document.getElementById("demandChange").addEventListener("change", demandChangeUpdated);
+		document.getElementById("initalSupply").addEventListener("change", initalSupplyChanged);
+		document.getElementById("supplyChange").addEventListener("change", supplyChangeUpdated);
 
 		function updateRange (){
 			calculateMaxRevenue(maxRevenue,priceOptions);
@@ -168,7 +161,7 @@
 				else if(dataset.label === 'Total Supply'){
 					dataset.data = newData.supply;
 				}
-				else if(dataset.label === 'Total Demand'){
+				else if(dataset.label === 'Demand'){
 					dataset.data = newData.demand;
 				}
 			});
@@ -183,23 +176,11 @@
 			chart.update();
 		}
 		function displayMessage(){
-			message = "";
 			price = priceOptions[0].value;
 			consumption = revenueObject[price].consumption;
 			supply = revenueObject[price].supply;
 			revenue = revenueObject[price].revenue;
 
-			if (consumption > supply) {
-				consumption = supply;
-				message = "ABC Company cannot make enough XYZ Widgets";
-			}
-
-			if (consumption <= 0) {
-				consumption = 0;
-				message = "No one will buy XYZ Widgets at this price";
-			}
-
-			
 			if (revenue === maxRevenue) {
 				message = "This is the equilibrium price"
 			}
@@ -210,9 +191,19 @@
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
+					debugger;
 					for (var i = minimum ; i <= maximum; i++) {
 						let consumption = i * Mdemand + Bdemand;
 						let supply = i * Msupply + Bsupply;
+						chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
+						if (consumption > supply) {
+							consumption = supply;
+							message = "ABC Company cannot make enough XYZ Widgets";
+						}
+						if (consumption <= 0) {
+							consumption = 0;
+							message = "No one will buy XYZ Widgets at this price";
+						}
 						let revenue = consumption * i;
 						if(revenue < 0){
 							revenue = 0;
@@ -225,7 +216,6 @@
 						//setting up charting data to show the equilibrium price on a chart
 						chartData.revenue.push(revenue);
 						chartData.supply.push(supply);
-						chartData.demand.push(consumption);
 						chartData.labels.push("Price per Widget: $"+i)
 
 						//check to see if the price and supply calculation is the largest in the set.
@@ -261,17 +251,17 @@
 			Bdemand = parseInt(event.target.value);
 			resetChart();
 		}
+		function demandChangeUpdated(event){
+			Mdemand = parseInt(event.target.value);
+			resetChart();
+		}
 
-		function initalSupplyChanged(){
-			Bdemand = parseInt(event.target.value);
+		function initalSupplyChanged(event){
+			Bsupply = parseInt(event.target.value);
 			resetChart();
 		}
-		function supplyChangeUpdated(){
-			Bdemand = parseInt(event.target.value);
-			resetChart();
-		}
-		function demandChangeUpdated(){
-			Bdemand = parseInt(event.target.value);
+		function supplyChangeUpdated(event){
+			Msupply = parseInt(event.target.value);
 			resetChart();
 		}
 		//this is to set inital state of the graph without clicks
