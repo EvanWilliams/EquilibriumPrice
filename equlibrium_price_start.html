@@ -54,31 +54,57 @@
     	//   Qsupply = Msupply * price + Bsupply
 		//   Qdemand = Mdemand * price + Bdemand
 
-    	var Mdemand = -1000;
-    	var Bdemand = 10000;
-    	var Msupply = 0; // what if ABC can hire more people when price goes up? 
-    	var Bsupply = 8000;
-    	var consumption;
-    	var supply;
-    	var message;
+    	let Mdemand = -1000;
+    	let Bdemand = 10000;
+    	let Msupply = 0; // what if ABC can hire more people when price goes up? 
+    	let Bsupply = 8000;
+    	let consumption;
+    	let supply;
+		let revenue;
+    	let message;
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 
 		function calculateOutput() {
-			var price;
-			var priceOptions = document.getElementsByName("price");
-
+			let price;
+			let priceOptions = document.getElementsByName("price");
+			let maxRevenue = 0;
+			let revenueObject = {};
 			message = "";
 
-			for (var i = 1; i < priceOptions.length; i++) {
+			const calculateMaxRevenue = (maxRevenue,priceOption) => {
+
+				priceOptions.forEach( (priceOption) => {
+					let consumption = priceOption.value * Mdemand + Bdemand;
+					let supply = priceOption.value * Msupply + Bsupply;
+					let revenue = consumption * priceOption.value;
+
+					revenueObject[priceOption.value] = {
+						"consumption":consumption,
+						"supply":supply,
+						"revenue":revenue
+					}
+					//check to see if the price and supply calculation is the largest in the set.
+					if(maxRevenue <= revenue){
+						maxRevenue = revenue;
+					}
+				})
+				return maxRevenue;
+			}
+
+			maxRevenue = calculateMaxRevenue(maxRevenue,priceOptions);
+
+			for (var i = 0; i < priceOptions.length; i++) {
 				if (priceOptions[i].checked) {
 					price = priceOptions[i].value;
 					break;
 				}
 			}
 
-			consumption = price * Mdemand + Bdemand;
-			supply = price * Msupply + Bsupply;
+			consumption = revenueObject[price].consumption;
+			supply = revenueObject[price].supply;
+			revenue = revenueObject[price].revenue;
+			debugger;
 
 			if (consumption > supply) {
 				consumption = supply;
@@ -91,14 +117,14 @@
 			}
 
 			
-			if (maxRevenue) {
+			if (revenue === maxRevenue) {
 				message = "This is the equilibrium price"
 			}
 			
 
 			revenue = consumption * price;
 
-			document.getElementById("result").innerHTML = "XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
+			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
 		}
 
     </script>
