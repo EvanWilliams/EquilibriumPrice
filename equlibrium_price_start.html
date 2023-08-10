@@ -66,6 +66,7 @@
 					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
 					<span><!-- half --></span>
 				</div>
+
 	        </div>
 
 			<div class="graphControlWrapper">
@@ -112,7 +113,8 @@
 			"labels":[],
 			"revenue":[],
 			"supply":[],
-			"demand":[]}
+			"demand":[],
+			"messages":[]}
 		let revenueObject = {};
 
 		const priceOptions = document.getElementsByName("price");
@@ -155,10 +157,10 @@
 		function addData(chart,labels, newData) {
 			chart.data.labels = labels;
 			chart.data.datasets.forEach((dataset) => {
-				if(dataset.label === 'Total Revenue'){
+				if(dataset.label === 'Revenue'){
 					dataset.data = newData.revenue;
 				}
-				else if(dataset.label === 'Total Supply'){
+				else if(dataset.label === 'Supply'){
 					dataset.data = newData.supply;
 				}
 				else if(dataset.label === 'Demand'){
@@ -191,7 +193,7 @@
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
-					debugger;
+					
 					for (var i = minimum ; i <= maximum; i++) {
 						let consumption = i * Mdemand + Bdemand;
 						let supply = i * Msupply + Bsupply;
