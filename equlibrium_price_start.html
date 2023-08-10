@@ -14,6 +14,16 @@
 			grid-row-gap: 5px;
 			padding: 30px 0px;
 		}
+		.slider,.range{
+			width:75vh;
+		}
+		.numbers{
+			padding-left:3px;
+			width:75vh;
+			display:flex;
+			justify-content: space-between;
+
+		}
     	#result {color:#7A81FF;}
 
     	@media screen and (max-width: 700px) {
@@ -42,7 +52,15 @@
 	  	<form>
 	  		<div class="section">
 		        Price for XYZ Widget:
-				<input type="range" name="price" step="1" max="10" min="1">
+
+				<div class="numbers">
+					<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+				  </div>
+				<div class="slider">
+					<span><!-- half --></span>
+					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
+					<span><!-- half --></span>
+				</div>
 		        <!-- <input type="radio" name="price" value=1> $1
 		        <input type="radio" name="price" value=2> $2
 		        <input type="radio" name="price" value=3> $3
@@ -127,7 +145,7 @@
 			});
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
-
+		document.getElementById("price").addEventListener("change", calculateOutput);
 		function addData(chart,labels, newData) {
 			chart.data.labels = labels;
 			chart.data.datasets.forEach((dataset) => {
@@ -162,7 +180,7 @@
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
-					for (var i = minimum ; i < maximum; i++) {
+					for (var i = minimum ; i <= maximum; i++) {
 						let consumption = i * Mdemand + Bdemand;
 						let supply = i * Msupply + Bsupply;
 						let revenue = consumption * i;
@@ -178,7 +196,7 @@
 						chartData.revenue.push(revenue);
 						chartData.supply.push(supply);
 						chartData.demand.push(consumption);
-						chartData.labels.push("Price per Widget: $"+priceOptions[0].value)
+						chartData.labels.push("Price per Widget: $"+i)
 
 						//check to see if the price and supply calculation is the largest in the set.
 						if(maxRevenue <= revenue){
