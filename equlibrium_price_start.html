@@ -6,8 +6,13 @@
     <title>Equilibrium Price</title>
 
     <style>
-		.chartWrapper{width:800px;height:400px;}
-    	.container {margin:20px;padding:20px;background-color:#76D6FF;}
+    	.container {
+			margin: 20px;
+			padding: 20px;
+			background-color: #f7f7f7;
+			border: solid 1px #d9d9d9;
+			border-radius: 2px;
+		}
 		.graphControlWrapper{
 			display: grid;
 			grid-template-columns: 1fr 1fr;
@@ -33,12 +38,12 @@
 		}
 		@media screen and (max-width: 800px) {
 		.chartWrapper {
-		    width:600px;height:300px;
+		    width:560px;height:280px;
 		  }
 		}
 		@media screen and (max-width: 600px) {
 		.chartWrapper {
-		    width:400px;height:200px;
+		    width:360px;height:180px;
 		  }
 		}
     </style>
@@ -51,10 +56,10 @@
   	<div id="input" class="container">
 	  	<form>
 	  		<div class="section">
-		        Price for XYZ Widget:
+		        Price for XYZ Widget in $:
 
 				<div class="numbers">
-					<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+					<span>$1</span><span>$2</span><span>$3</span><span>$4</span><span>$5</span><span>$6</span><span>$7</span><span>$8</span><span>$9</span><span>$10</span>
 				  </div>
 				<div class="slider">
 					<span><!-- half --></span>
@@ -89,7 +94,7 @@
 	        </div>
 	    </form>
     </div>
-	<div class="chartWrapper">
+	<div class="chartWrapper container">
 		<canvas id="dataChart"></canvas>
 	</div>
 	
@@ -148,6 +153,7 @@
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
+		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
 
 		function updateRange (){
 			calculateMaxRevenue(maxRevenue,priceOptions);
@@ -233,9 +239,9 @@
 			maxRevenue = calculateMaxRevenue(maxRevenue,priceOptions);
 			//chart reset to make sure that this fires on submit.
 			resetChart();
-
 			displayMessage();
-		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
+		}
+
 
 		function emptyChartData(){
 			chartData.revenue = [];
@@ -268,7 +274,9 @@
 			Bdemand = parseInt(event.target.value);
 			resetChart();
 		}
-		}
+		//this is to set inital state of the graph without clicks
+		calculateOutput();
+
 	
     </script>
   </body>
