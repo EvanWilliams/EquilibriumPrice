@@ -6,12 +6,23 @@
     <title>Equilibrium Price</title>
 
     <style>
+		.chartWrapper{width:800px;height:400px;}
     	.container {margin:20px;padding:20px;background-color:#76D6FF;}
     	#result {color:#7A81FF;}
 
     	@media screen and (max-width: 700px) {
 		  input {
 		    display:block;
+		  }
+		}
+		@media screen and (max-width: 800px) {
+		.chartWrapper {
+		    width:600px;height:300px;
+		  }
+		}
+		@media screen and (max-width: 600px) {
+		.chartWrapper {
+		    width:400px;height:200px;
 		  }
 		}
     </style>
@@ -44,7 +55,10 @@
 	        </div>
 	    </form>
     </div>
-	<canvas id="myChart"></canvas>
+	<div class="chartWrapper">
+		<canvas id="myChart"></canvas>
+	</div>
+	
     <div id="result" class="container">
 
    	</div>
@@ -74,7 +88,9 @@
 			let revenueObject = {};
 			let chartData = {
 				"labels":[],
-				"data":[]
+				"revenue":[],
+				"supply":[],
+				"demand":[]
 			}
 			message = "";
 
@@ -92,8 +108,10 @@
 						"revenue":revenue
 					}
 					//setting up charting data to show the equilibrium price on a chart
-					chartData.data.push(revenue);
-					chartData.labels.push(priceOption.value)
+					chartData.revenue.push(revenue);
+					chartData.supply.push(supply);
+					chartData.demand.push(consumption);
+					chartData.labels.push("Price per Widget: $"+priceOption.value)
 
 					//check to see if the price and supply calculation is the largest in the set.
 					if(maxRevenue <= revenue){
@@ -137,21 +155,25 @@
 
 
 			new Chart(ctx, {
-				type: 'bar',
 				data: {
-				labels: chartData.labels,
-				datasets: [{
-					label: 'Revenue for price per widget',
-					data: chartData.data,
-					borderWidth: 1
-				}]
-				},
-				options: {
-				scales: {
-					y: {
-					beginAtZero: true
-					}
-				}
+        			datasets: [
+						{
+							type: 'bar',
+							label: 'Total Revenue',
+							data: chartData.revenue,
+						},
+						{
+							type: 'line',
+							label: 'Total Supply',
+							data: chartData.supply,
+						},
+						{
+							type: 'line',
+							label: 'Total Demand',
+							data: chartData.demand,
+						}
+				],
+					labels:chartData.labels
 				}
 			});
 			}
