@@ -17,9 +17,14 @@
 			border: solid 1px #d9d9d9;
 			border-radius: 2px;
 		}
+
+		.container.innercontainer{
+			border: solid 1px #c8c8c8
+		}
 		.epWrapper img{
 			height:256px;
 			width:256px;
+			padding:16px;
 		}
 		.epWrapper{
 			display: grid;
@@ -56,15 +61,20 @@
 			 padding: 18px 0px;
 		}
     	#result {
-			height: 185px;
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 1fr;
 			grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+			grid-row-gap: 5px;
 		}
 		@media screen and (max-width: 425px) {
 		  .chartContainer {
 		    display: none;
 		  }
+		}
+		@media screen and (max-width: 700px){
+			.imageDescription{
+				grid-column: 1 / span 2;
+			}
 		}
     	@media screen and (max-width: 700px) {
 		  input {
@@ -100,8 +110,8 @@
   		<div>ABC Company Inc. has just invented the XYZ Widget. A revolutionary product that will change the lives of everyone that buys it. In this exercise, you will help ABC Company Inc choose the correct equillibrium price for the new product.</div>
 		<div class="epWrapper">
 			<img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Price_of_market_balance.gif" alt="Price of market balance.gif" height="480" width="480">
-			<div>
-				<p>To illistrate the use of the equilibrium price assume the following about the figure displayed left. To find the equilibrium price you must find the intersection of the S (supply curve) and D (demand curve). Because of the granularity of the chart there may be more than one point that sits at maximum revenue. This is the Equilibrium Point.
+			<div class="imageDescription">
+				<p>To illustrate the use of the equilibrium price assume the following about the figure displayed left. To find the equilibrium price you must find the intersection of the S (supply curve) and D (demand curve). Because of the granularity of the chart there may be more than one price that sits at maximum revenue. This is the Equilibrium Point.
 				</p>
 				<ul>
 					<li>P – price</li>
@@ -127,7 +137,7 @@
 					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
 					<span><!-- half --></span>
 				</div>
-				<div id="result" class="container">
+				<div id="result" class="container innercontainer">
 					
 				</div>
 				
@@ -253,7 +263,12 @@
 				message = chartData.messages[price-1];
 			}
 
-			document.getElementById("result").innerHTML = `<div>XYZ Supply: ${supply}/month</div><br><div>Price per Widget: $${price} per unit</div><br><div>XYZ Widgets sold:${consumption}/month</div><br><div>Revenue:${revenue}/month</div><br><br><div>${message}</div>`;
+			document.getElementById("result").innerHTML =
+			`<div>XYZ Supply: ${supply}/month</div>
+			<div>Price per Widget: $${price} per unit</div>
+			<div>XYZ Widgets sold: ${consumption}/month</div>
+			<div>Revenue: ${revenue}/month</div>
+			<div>${message}</div>`;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
