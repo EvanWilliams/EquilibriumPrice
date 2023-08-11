@@ -9,6 +9,7 @@
 		body{
 			max-width: 900px;
 			margin: auto;
+			font-family: math;
 		}
     	.container {
 			margin: 20px;
@@ -16,12 +17,14 @@
 			background-color: #f7f7f7;
 			border: solid 1px #d9d9d9;
 			border-radius: 2px;
+			box-shadow:#d9d9d9 3px 3px 1px;
 		}
 
 		.container.innercontainer{
 			border: solid 1px #c8c8c8;
     		padding: 10px 20px;
 			margin: 10px;
+			box-shadow: none;
 		}
 		.epWrapper img{
 			height:256px;
@@ -176,14 +179,14 @@
 			<canvas id="dataChart"></canvas>
 		</div>
 	</div>
-
+	<script src="https://code.jquery.com/jquery-3.7.0.slim.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    	<script language="javascript">
 
     	// Equilibrium Price Equations:
     	//   Qsupply = Msupply * price + Bsupply
 		//   Qdemand = Mdemand * price + Bdemand
-
+		$('#initalDemand').addClass("below");
     	let Mdemand = -1000;
     	let Bdemand = 10000;
     	let Msupply = 0; // what if ABC can hire more people when price goes up? 
@@ -353,45 +356,46 @@
 			`<div>${disclaimer}</div>`;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
-				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
-					let minimum = parseInt(priceOptions[0].min);
-					let maximum = parseInt(priceOptions[0].max);
-					
-					for (var i = minimum ; i <= maximum; i++) {
-						let consumption = i * Mdemand + Bdemand;
-						let supply = i * Msupply + Bsupply;
-						message = "";
-						chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
-						if (consumption >= supply) {
-							consumption = supply;
-							message = "ABC Company cannot make enough XYZ Widgets";
-						}
-						if (consumption <= 0) {
-							consumption = 0;
-							message = "No one will buy XYZ Widgets at this price";
-						}
-						let revenue = consumption * i;
-						if(revenue < 0){
-							revenue = 0;
-						}
-						revenueObject[i] = {
-							"consumption": consumption,
-							"supply":supply,
-							"revenue":revenue
-						}
-						//setting up charting data to show the equilibrium price on a chart
-						chartData.messages.push(message);
-						chartData.revenue.push(revenue);
-						chartData.supply.push(supply);
-						chartData.labels.push("Price per Widget: $"+i)
-
-						//check to see if the price and supply calculation is the largest in the set.
-						if(maxRevenue <= revenue){
-							maxRevenue = revenue;
-						}
+			emptyChartData();
+			//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
+			let minimum = parseInt(priceOptions[0].min);
+			let maximum = parseInt(priceOptions[0].max);
+			
+			for (var i = minimum ; i <= maximum; i++) {
+				let consumption = i * Mdemand + Bdemand;
+				let supply = i * Msupply + Bsupply;
+				message = "";
+				chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
+				if (consumption >= supply) {
+					consumption = supply;
+					message = "ABC Company cannot make enough XYZ Widgets";
 				}
-				return maxRevenue;
+				if (consumption <= 0) {
+					consumption = 0;
+					message = "No one will buy XYZ Widgets at this price";
+				}
+				let revenue = consumption * i;
+				if(revenue < 0){
+					revenue = 0;
+				}
+				revenueObject[i] = {
+					"consumption": consumption,
+					"supply":supply,
+					"revenue":revenue
+				}
+				//setting up charting data to show the equilibrium price on a chart
+				chartData.messages.push(message);
+				chartData.revenue.push(revenue);
+				chartData.supply.push(supply);
+				chartData.labels.push("Price per Widget: $"+i)
+
+				//check to see if the price and supply calculation is the largest in the set.
+				if(maxRevenue <= revenue){
+					maxRevenue = revenue;
+				}
 			}
+			return maxRevenue;
+		}
 		function calculateOutput() {
 			maxRevenue = calculateMaxRevenue(0,priceOptions);
 			//chart reset to make sure that this fires on submit.
@@ -410,7 +414,6 @@
 
 		function resetChart(){
 			removeData(myChart);
-			emptyChartData();
 			calculateMaxRevenue(0,priceOptions);
 			addData(myChart,chartData.labels,chartData);
 		}
