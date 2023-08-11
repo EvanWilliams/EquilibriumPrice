@@ -6,6 +6,10 @@
     <title>Equilibrium Price</title>
 
     <style>
+		body{
+			max-width: 900px;
+			margin: auto;
+		}
     	.container {
 			margin: 20px;
 			padding: 20px;
@@ -17,7 +21,17 @@
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 			grid-row-gap: 5px;
-			padding: 30px 0px;
+			grid-column-gap: 5px;
+			padding: 16px 0px;
+		}
+		.chartWrapper{
+			position: relative;
+			margin: auto;
+			height: 50vh;
+		}
+		.graphControlWrapper input{
+			width: 125px;
+    		height: 25px;
 		}
 		.slider,.range{
 			width:75vh;
@@ -40,18 +54,26 @@
 		  }
 		}
 		@media screen and (max-width: 800px) {
-		.chartWrapper {
-		    width:560px;height:280px;
-		  }
+			.numbers,.slider,.range{
+			width: 55vh;
+			}
 		}
-		@media screen and (max-width: 600px) {
-		.chartWrapper {
-		    width:360px;height:180px;
-		  }
-		.numbers,.slider,.range{
-			width: 35vh;
+		@media screen and (max-width: 625px) {
+			.numbers,.slider,.range{
+			width: 40vh;
 		}
 		}
+		@media screen and (max-width: 500px) {
+			.numbers,.slider,.range{
+			width: 30vh;
+		}
+		}
+		@media screen and (max-width: 400px) {
+			.numbers,.slider,.range{
+			width: 25vh;
+		}
+		}
+		
     </style>
 
   </head>
@@ -78,10 +100,10 @@
 	        </div>
 
 			<div class="graphControlWrapper">
-				Inital Demand (in Units)<input type="text" value=10000 id="initalDemand">
-				Decrease in Demand per Dollar increase in price<input type="text" value=-1000 id="demandChange">
-				Inital Supply (in Units)<input type="text" value=8000 id="initalSupply">
-				Increase in Supply per Dollar increase in price<input type="text" value=0 id="supplyChange">
+				<div>Inital Demand (in Units)</div><input type="text" value=10000 id="initalDemand">
+				<div>Decrease in Demand per Dollar increase in price</div><input type="text" value=-1000 id="demandChange">
+				<div>Inital Supply (in Units)</div><input type="text" value=8000 id="initalSupply">
+				<div>Increase in Supply per Dollar increase in price</div><input type="text" value=0 id="supplyChange">
 			</div>
 
 			<div>Click Calculate to generate a graph for your desired values.
@@ -93,8 +115,10 @@
 	        </div>
 	    </form>
     </div>
-	<div class="chartWrapper container">
-		<canvas id="dataChart"></canvas>
+	<div class="container chartContainer">
+		<div class="chartWrapper">
+			<canvas id="dataChart"></canvas>
+		</div>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -195,13 +219,12 @@
 				message = chartData.messages[price-1];
 			}
 
-			document.getElementById("result").innerHTML = "XYZ Supply:"+supply+"/month<br>"+"Price per Widget: $"+price+" per unit<br>"+"XYZ Widgets sold:"+consumption+"/month<br>Revenue:"+revenue+"/month<br><br>"+message;
+			document.getElementById("result").innerHTML = "<div>XYZ Supply: "+supply+"/month</div><br>"+"<div>Price per Widget: $"+price+" per unit</div><br>"+"<div>XYZ Widgets sold:"+consumption+"/month</div><br><div>Revenue:"+revenue+"/month</div><br><br>"+message;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 					let minimum = parseInt(priceOptions[0].min);
 					let maximum = parseInt(priceOptions[0].max);
-					debugger;
 					
 					for (var i = minimum ; i <= maximum; i++) {
 						let consumption = i * Mdemand + Bdemand;
