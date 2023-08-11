@@ -229,7 +229,7 @@
 			});
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
-		document.getElementById("price").addEventListener("change", calculateOutput);
+		document.getElementById("price").addEventListener("change", updateRange);
 		const initalDemandElement = document.getElementById("initalDemand");
 		initalDemandElement.addEventListener("change", initalDemandChanged);
 		const demandChangeElement = document.getElementById("demandChange");
@@ -239,9 +239,11 @@
 		const supplyChangeElement = document.getElementById("supplyChange")
 		supplyChangeElement.addEventListener("change", supplyChangeUpdated);
 
-		// function updateRange (){
-		// 	calculateOutput()
-		// }
+		function updateRange (){
+			maxRevenue = calculateMaxRevenue(0,priceOptions);
+			//chart reset to make sure that this fires on submit.
+			displayMessage();
+		}
 		function addData(chart,labels, newData) {
 			//Chart.js helper function that adds data to the chart
 			chart.data.labels = labels;
