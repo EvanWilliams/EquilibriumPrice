@@ -169,10 +169,6 @@
 			<div>Click Calculate to generate a graph for your desired values.
 				<input id="calculate" type="button" value="Calculate">
 			</div>
-
-
-
-	        </div>
 	    </form>
     </div>
 	<div class="container chartContainer">
@@ -233,7 +229,7 @@
 			});
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
-		document.getElementById("price").addEventListener("change", updateRange);
+		document.getElementById("price").addEventListener("change", calculateOutput);
 		const initalDemandElement = document.getElementById("initalDemand");
 		initalDemandElement.addEventListener("change", initalDemandChanged);
 		const demandChangeElement = document.getElementById("demandChange");
@@ -243,11 +239,9 @@
 		const supplyChangeElement = document.getElementById("supplyChange")
 		supplyChangeElement.addEventListener("change", supplyChangeUpdated);
 
-		function updateRange (){
-			emptyChartData();
-			calculateMaxRevenue(maxRevenue,priceOptions);
-			displayMessage();
-		}
+		// function updateRange (){
+		// 	calculateOutput()
+		// }
 		function addData(chart,labels, newData) {
 			//Chart.js helper function that adds data to the chart
 			chart.data.labels = labels;
@@ -397,7 +391,7 @@
 				return maxRevenue;
 			}
 		function calculateOutput() {
-			maxRevenue = calculateMaxRevenue(maxRevenue,priceOptions);
+			maxRevenue = calculateMaxRevenue(0,priceOptions);
 			//chart reset to make sure that this fires on submit.
 			resetChart();
 			displayMessage();
