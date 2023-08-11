@@ -46,7 +46,9 @@
 		.title{   
 			 padding: 18px 0px;
 		}
-    	#result {color:#7A81FF;}
+    	#result {
+			height: 185px;
+		}
 
     	@media screen and (max-width: 700px) {
 		  input {
@@ -95,8 +97,9 @@
 					<span><!-- half --></span>
 				</div>
 				<div id="result" class="container">
-
+					
 				</div>
+				
 	        </div>
 
 			<div class="graphControlWrapper">
@@ -219,7 +222,7 @@
 				message = chartData.messages[price-1];
 			}
 
-			document.getElementById("result").innerHTML = "<div>XYZ Supply: "+supply+"/month</div><br>"+"<div>Price per Widget: $"+price+" per unit</div><br>"+"<div>XYZ Widgets sold:"+consumption+"/month</div><br><div>Revenue:"+revenue+"/month</div><br><br>"+message;
+			document.getElementById("result").innerHTML = "<div>XYZ Supply: "+supply+"/month</div><br>"+"<div>Price per Widget: $"+price+" per unit</div><br>"+"<div>XYZ Widgets sold:"+consumption+"/month</div><br><div>Revenue:"+revenue+"/month</div><br><br><div>"+message+"</div>";
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
