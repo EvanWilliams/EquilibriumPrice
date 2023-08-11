@@ -29,6 +29,9 @@
 			justify-content: space-between;
 
 		}
+		.title{   
+			 padding: 18px 0px;
+		}
     	#result {color:#7A81FF;}
 
     	@media screen and (max-width: 700px) {
@@ -45,6 +48,9 @@
 		.chartWrapper {
 		    width:360px;height:180px;
 		  }
+		.numbers,.slider,.range{
+			width: 35vh;
+		}
 		}
     </style>
 
@@ -56,7 +62,7 @@
   	<div id="input" class="container">
 	  	<form>
 	  		<div class="section">
-		        Price for XYZ Widget in $:
+		        <div class="title">Price for XYZ Widget in $:</div>
 
 				<div class="numbers">
 					<span>$1</span><span>$2</span><span>$3</span><span>$4</span><span>$5</span><span>$6</span><span>$7</span><span>$8</span><span>$9</span><span>$10</span>
@@ -66,14 +72,16 @@
 					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
 					<span><!-- half --></span>
 				</div>
+				<div id="result" class="container">
 
+				</div>
 	        </div>
 
 			<div class="graphControlWrapper">
-				Inital Demand (in Units)<input type="text" value=22000 id="initalDemand">
-				Decrease in Demand per Dollar increase in price<input type="text" value=-2000 id="demandChange">
-				Inital Supply (in Units)<input type="text" value=2000 id="initalSupply">
-				Increase in Supply per Dollar increase in price<input type="text" value=2000 id="supplyChange">
+				Inital Demand (in Units)<input type="text" value=10000 id="initalDemand">
+				Decrease in Demand per Dollar increase in price<input type="text" value=-1000 id="demandChange">
+				Inital Supply (in Units)<input type="text" value=8000 id="initalSupply">
+				Increase in Supply per Dollar increase in price<input type="text" value=0 id="supplyChange">
 			</div>
 
 			<div>Click Calculate to generate a graph for your desired values.
@@ -88,11 +96,7 @@
 	<div class="chartWrapper container">
 		<canvas id="dataChart"></canvas>
 	</div>
-	
-    <div id="result" class="container">
 
-   	</div>
-	
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    	<script language="javascript">
 
@@ -100,10 +104,10 @@
     	//   Qsupply = Msupply * price + Bsupply
 		//   Qdemand = Mdemand * price + Bdemand
 
-    	let Mdemand = -2000;
-    	let Bdemand = 22000;
-    	let Msupply = 2000; // what if ABC can hire more people when price goes up? 
-    	let Bsupply = 2000;
+    	let Mdemand = -1000;
+    	let Bdemand = 10000;
+    	let Msupply = 0; // what if ABC can hire more people when price goes up? 
+    	let Bsupply = 8000;
 		let maxRevenue = 0;
     	let consumption;
     	let supply;
@@ -204,7 +208,7 @@
 						let supply = i * Msupply + Bsupply;
 						message = "";
 						chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
-						if (consumption > supply) {
+						if (consumption >= supply) {
 							consumption = supply;
 							message = "ABC Company cannot make enough XYZ Widgets";
 						}
