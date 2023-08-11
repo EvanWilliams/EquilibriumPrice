@@ -19,7 +19,9 @@
 		}
 
 		.container.innercontainer{
-			border: solid 1px #c8c8c8
+			border: solid 1px #c8c8c8;
+    		padding: 10px 20px;
+			margin: 10px;
 		}
 		.epWrapper img{
 			height:256px;
@@ -58,13 +60,27 @@
 
 		}
 		.title{   
-			 padding: 18px 0px;
+			padding: 18px 0px;
+			font-family: monospace;
+			margin-bottom: 0px;
+			margin-top: 0px;
 		}
     	#result {
 			display: grid;
 			grid-template-columns: 1fr;
-			grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+			grid-template-rows: 36px 36px 36px 36px 36px;
 			grid-row-gap: 5px;
+			align-items: center;
+		}
+		#disclaimer{
+			display:none;
+			color: #f53c3c;
+			background: white;
+			border: #f53c3c 1px solid;
+			padding: 10px 10px;
+			margin: 10px 0px;
+			text-transform: uppercase;
+			width:340px;
 		}
 		@media screen and (max-width: 425px) {
 		  .chartContainer {
@@ -127,7 +143,7 @@
   	<div id="input" class="container">
 	  	<form>
 	  		<div class="section">
-		        <div class="title">Price for XYZ Widget in $:</div>
+		        <h2 class="title">Price for XYZ Widget in $:</h2>
 
 				<div class="numbers">
 					<span>$1</span><span>$2</span><span>$3</span><span>$4</span><span>$5</span><span>$6</span><span>$7</span><span>$8</span><span>$9</span><span>$10</span>
@@ -142,14 +158,14 @@
 				</div>
 				
 	        </div>
-
+			
 			<div class="graphControlWrapper">
 				<div>Inital Demand (in Units)</div><input type="text" value=10000 id="initalDemand">
 				<div>Decrease in Demand per Dollar increase in price</div><input type="text" value=-1000 id="demandChange">
 				<div>Inital Supply (in Units)</div><input type="text" value=8000 id="initalSupply">
 				<div>Increase in Supply per Dollar increase in price</div><input type="text" value=0 id="supplyChange">
 			</div>
-
+			<div id="disclaimer"></div>
 			<div>Click Calculate to generate a graph for your desired values.
 				<input id="calculate" type="button" value="Calculate">
 			</div>
@@ -181,6 +197,7 @@
     	let supply;
 		let revenue;
     	let message = "";
+		let disclaimer = "";
 		chartData = {
 			"labels":[],
 			"revenue":[],
@@ -217,10 +234,14 @@
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
-		document.getElementById("initalDemand").addEventListener("change", initalDemandChanged);
-		document.getElementById("demandChange").addEventListener("change", demandChangeUpdated);
-		document.getElementById("initalSupply").addEventListener("change", initalSupplyChanged);
-		document.getElementById("supplyChange").addEventListener("change", supplyChangeUpdated);
+		const initalDemandElement = document.getElementById("initalDemand");
+		initalDemandElement.addEventListener("change", initalDemandChanged);
+		const demandChangeElement = document.getElementById("demandChange");
+		demandChangeElement.addEventListener("change", demandChangeUpdated);
+		const initalSupplyElement = document.getElementById("initalSupply");
+		initalSupplyElement.addEventListener("change", initalSupplyChanged);
+		const supplyChangeElement = document.getElementById("supplyChange")
+		supplyChangeElement.addEventListener("change", supplyChangeUpdated);
 
 		function updateRange (){
 			emptyChartData();
@@ -228,6 +249,7 @@
 			displayMessage();
 		}
 		function addData(chart,labels, newData) {
+			//Chart.js helper function that adds data to the chart
 			chart.data.labels = labels;
 			chart.data.datasets.forEach((dataset) => {
 				if(dataset.label === 'Revenue'){
@@ -244,11 +266,65 @@
 		}
 
 		function removeData(chart) {
+			//Chart.js helper function that removes data from the chart
 			chart.data.labels = [];
 			chart.data.datasets.forEach((dataset) => {
 				dataset.data = [];
 			});
 			chart.update();
+		}
+		function initalizeLocalStorageVariables(){
+			if(!localStorage.getItem("initalDemand")){
+				localStorage.setItem("initalDemand",Bdemand);
+			}
+			else{
+				Bdemand = parseInt(localStorage.getItem("initalDemand"));
+				initalDemandElement.value = Bdemand;
+			}
+
+			if(!localStorage.getItem("demandChange")){
+				localStorage.setItem("demandChange",Mdemand);
+			}
+			else{
+				Mdemand = parseInt(localStorage.getItem("demandChange"));
+				demandChangeElement.value = Mdemand;
+			}
+
+			if(!localStorage.getItem("initalSupply")){
+				localStorage.setItem("initalSupply",Bsupply);
+			}
+			else{
+				Bsupply = parseInt(localStorage.getItem("initalSupply"));
+				initalSupplyElement.value = Bsupply;
+			}
+
+			if(!localStorage.getItem("supplyChange")){
+				localStorage.setItem("supplyChange",Msupply);
+			}
+			else{
+				Msupply = parseInt(localStorage.getItem("supplyChange"));
+				supplyChangeElement.value = Msupply;
+			}
+		}
+		function validateInput(string){
+			//must input an integer
+			var regex=/^[0-9-]+$/;
+			if (!string.match(regex))
+			{
+				disclaimer = "You must input only integer numbers";
+				return false;
+			}
+			disclaimer = ""
+			return true;
+		}
+		function validateInputs(){
+			//check all 4 inputs that are needed for the graph and check for incorrect inputs.
+			if(validateInput(initalDemandElement.value) && validateInput(demandChangeElement.value) && validateInput(initalSupplyElement.value) && validateInput(supplyChangeElement.value)){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		function displayMessage(){
 			price = priceOptions[0].value;
@@ -269,6 +345,16 @@
 			<div>XYZ Widgets sold: ${consumption}/month</div>
 			<div>Revenue: ${revenue}/month</div>
 			<div>${message}</div>`;
+
+			let disclaimerElement = document.getElementById("disclaimer");
+			if(disclaimer !==''){
+				disclaimerElement.style.display = "block";
+			}
+			else{
+				disclaimerElement.style.display = "none";
+			}
+			disclaimerElement.innerHTML =
+			`<div>${disclaimer}</div>`;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
@@ -330,29 +416,45 @@
 			removeData(myChart);
 			emptyChartData();
 			calculateMaxRevenue(0,priceOptions);
-			//update the data for the chart refresh.
 			addData(myChart,chartData.labels,chartData);
 		}
 		function initalDemandChanged(event){
-			Bdemand = parseInt(event.target.value);
-			resetChart();
+			if(validateInputs()){
+				Bdemand = parseInt(event.target.value);
+				localStorage.setItem("initalDemand",Bdemand)
+				resetChart();
+			}
+			displayMessage();
 		}
 		function demandChangeUpdated(event){
-			Mdemand = parseInt(event.target.value);
-			resetChart();
+			if(validateInputs()){
+				Mdemand = parseInt(event.target.value);
+				localStorage.setItem("demandChange",Mdemand)
+				resetChart();
+			}
+			displayMessage();
 		}
 
 		function initalSupplyChanged(event){
-			Bsupply = parseInt(event.target.value);
-			resetChart();
+			if(validateInputs()){
+				Bsupply = parseInt(event.target.value);
+				localStorage.setItem("initalSupply",Bsupply)
+				resetChart();
+			}
+			displayMessage();
 		}
 		function supplyChangeUpdated(event){
-			Msupply = parseInt(event.target.value);
-			resetChart();
+			if(validateInputs()){
+				Msupply = parseInt(event.target.value);
+				localStorage.setItem("supplyChange",Msupply)
+				resetChart();
+			}
+			displayMessage();
 		}
+		//set initalstate of localStorage as well.
+		initalizeLocalStorageVariables();
 		//this is to set inital state of the graph without clicks
 		calculateOutput();
-
 	
     </script>
   </body>
