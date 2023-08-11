@@ -17,6 +17,15 @@
 			border: solid 1px #d9d9d9;
 			border-radius: 2px;
 		}
+		.epWrapper img{
+			height:256px;
+			width:256px;
+		}
+		.epWrapper{
+			display: grid;
+			padding: 16px 0px;
+			grid-template-columns: 1fr 1fr;
+		}
 		.graphControlWrapper{
 			display: grid;
 			grid-template-columns: 1fr 1fr;
@@ -48,8 +57,15 @@
 		}
     	#result {
 			height: 185px;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
 		}
-
+		@media screen and (max-width: 425px) {
+		  .chartContainer {
+		    display: none;
+		  }
+		}
     	@media screen and (max-width: 700px) {
 		  input {
 		    display:block;
@@ -81,7 +97,22 @@
   </head>
   <body>
   	<div id="intro" class="container">
-  	ABC Company Inc. has just invented the XYZ Widget. A revolutionary product that will change the lives of everyone that buys it. In this exercise, you will help ABC Company Inc choose the correct equillibrium price for the new product.
+  		<div>ABC Company Inc. has just invented the XYZ Widget. A revolutionary product that will change the lives of everyone that buys it. In this exercise, you will help ABC Company Inc choose the correct equillibrium price for the new product.</div>
+		<div class="epWrapper">
+			<img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Price_of_market_balance.gif" alt="Price of market balance.gif" height="480" width="480">
+			<div>
+				<p>To illistrate the use of the equilibrium price assume the following about the figure displayed left. To find the equilibrium price you must find the intersection of the S (supply curve) and D (demand curve). Because of the granularity of the chart there may be more than one point that sits at maximum revenue. This is the Equilibrium Point.
+				</p>
+				<ul>
+					<li>P – price</li>
+					<li>Q – quantity demanded and supplied</li>
+					<li>S – supply curve</li><li>D – demand curve</li>
+					<li>P<sub>0</sub> – equilibrium price</li>
+					<li>A – excess demand – when P&lt;P<sub>0</sub></li>
+					<li>B – excess supply – when P&gt;P<sub>0</sub></li>
+				</ul>
+			</div>
+		</div>
   	</div>
   	<div id="input" class="container">
 	  	<form>
@@ -222,7 +253,7 @@
 				message = chartData.messages[price-1];
 			}
 
-			document.getElementById("result").innerHTML = "<div>XYZ Supply: "+supply+"/month</div><br>"+"<div>Price per Widget: $"+price+" per unit</div><br>"+"<div>XYZ Widgets sold:"+consumption+"/month</div><br><div>Revenue:"+revenue+"/month</div><br><br><div>"+message+"</div>";
+			document.getElementById("result").innerHTML = `<div>XYZ Supply: ${supply}/month</div><br><div>Price per Widget: $${price} per unit</div><br><div>XYZ Widgets sold:${consumption}/month</div><br><div>Revenue:${revenue}/month</div><br><br><div>${message}</div>`;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
 				//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
