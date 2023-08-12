@@ -177,11 +177,11 @@
 				<div  class="container innercontainer">
 					<div id="result"></div>
 					<div>
-						<p>Here is a current price from a sample area so you know the price of fuel. Imagine this price to be an ongoing cost of production that must be made up in the cost restructuring and will increase the cost of goods which results in reduction of supply</p>
+						<p>Here is a current price from a random area so you know the price of fuel. Imagine this price to be an ongoing cost of production that must be made up in the cost restructuring and will increase the cost of goods which results in reduction of demand</p>
 						<div id="currentproduct"></div>
 						<div id="currentlocation"></div>
 						<div id="currentprice"></div>
-						<input id="fuelprice" type="button" value="Click to get a new fuel price."></button>
+						<input id="fuelprice" type="button" value="Click to get a new fuel price."></input>
 					</div>
 				</div>
 	        </div>
@@ -260,7 +260,7 @@
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
-		document.getElementById("fuelprice").addEventListener("change", pickRandomPrice );
+		document.getElementById("fuelprice").addEventListener("click", pickRandomPrice );
 		const initalDemandElement = document.getElementById("initalDemand");
 		initalDemandElement.addEventListener("change", initalDemandChanged);
 		const demandChangeElement = document.getElementById("demandChange");
@@ -480,7 +480,6 @@
 		}
 		function pickRandomPrice(){
 			let index = Math.floor( 100 * Math.random());
-
 			document.getElementById("currentproduct").innerHTML=`${apiData.convertedObjects[index].name}`
 			document.getElementById("currentlocation").innerHTML=`${apiData.convertedObjects[index].location}`
 			document.getElementById("currentprice").innerHTML=`${apiData.convertedObjects[index].price}`
