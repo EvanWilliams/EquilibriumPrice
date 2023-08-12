@@ -22,9 +22,11 @@
 
 		.container.innercontainer{
 			border: solid 1px #c8c8c8;
-    		padding: 10px 20px;
+			padding: 10px 20px;
 			margin: 10px;
 			box-shadow: none;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 		}
 		.epWrapper img{
 			height:256px;
@@ -76,6 +78,9 @@
 			margin-bottom: 0px;
 			margin-top: 0px;
 		}
+		.eqpdescription{
+			margin:8px;
+		}
     	#result {
 			display: grid;
 			grid-template-columns: 1fr;
@@ -97,10 +102,10 @@
 			height:45px;
 			max-width:275px;
 		}
-		@media screen and (max-width: 425px) {
-		  .chartContainer {
-		    display: none;
-		  }
+		@media screen and (max-width: 800px) {
+			.numbers,.slider,.range{
+			width: 55vh;
+			}
 		}
 		@media screen and (max-width: 700px){
 			.imageDescription{
@@ -112,11 +117,6 @@
 		    display:block;
 		  }
 		}
-		@media screen and (max-width: 800px) {
-			.numbers,.slider,.range{
-			width: 55vh;
-			}
-		}
 		@media screen and (max-width: 625px) {
 			.numbers,.slider,.range{
 			width: 40vh;
@@ -125,7 +125,14 @@
 		@media screen and (max-width: 500px) {
 			.numbers,.slider,.range{
 			width: 30vh;
+		}	.inputLabel{
+			padding-left:0px;
 		}
+		}
+		@media screen and (max-width: 425px) {
+		  .chartContainer {
+		    display: none;
+		  }
 		}
 		@media screen and (max-width: 400px) {
 			.numbers,.slider,.range{
@@ -138,10 +145,11 @@
   <body>
   	<div id="intro" class="container">
   		<div>ABC Company Inc. has just invented the XYZ Widget, a revolutionary product that will change the lives of everyone that buys it. In this exercise, you will help ABC Company Inc choose the correct equillibrium price for the new product.</div>
+		<div>Imagine if the price of the XYZ Widget has to go up becasue of the increasing cost of gasoline in their market area, can you find the equilibrium price that will bring the most revenue?</div>
 		<div class="epWrapper">
 			<img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Price_of_market_balance.gif" alt="Price of market balance.gif" height="480" width="480">
 			<div class="imageDescription">
-				<p>To illustrate the use of the equilibrium price, assume the following about the figure displayed left. To find the equilibrium price you must find the intersection of the S (supply curve) and D (demand curve). Because of the granularity of the chart there may be more than one price that sits at maximum revenue. This is the Equilibrium Point.
+				<p class="eqpdescription">To illustrate the use of the equilibrium price, assume the following about the figure displayed left. To find the equilibrium price you must find the intersection of the S (supply curve) and D (demand curve). Because of the dollar granularity of the chart, there may be more than one price that is considered the equilibrium point for the purpose of this demonstration. This is the Equilibrium Point, and it is the point with the maximum revenue.
 				</p>
 				<ul>
 					<li>P – price</li>
@@ -157,7 +165,7 @@
   	<div id="input" class="container">
 	  	<form>
 	  		<div class="section">
-		        <h2 class="title">Price for XYZ Widget in $:</h2>
+		        <h2 class="title">Find the equilibrium point by setting the price for the XYZ Widget in $:</h2>
 				<div class="numbers">
 					<span>$1</span><span>$2</span><span>$3</span><span>$4</span><span>$5</span><span>$6</span><span>$7</span><span>$8</span><span>$9</span><span>$10</span>
 				  </div>
@@ -166,7 +174,15 @@
 					<input id="price" class="range" type="range" name="price" step="1" max="10" min="1">
 					<span><!-- half --></span>
 				</div>
-				<div id="result" class="container innercontainer">
+				<div  class="container innercontainer">
+					<div id="result"></div>
+					<div>
+						<p>Here is a current price from a sample area so you know the price of fuel. Imagine this price to be an ongoing cost of production that must be made up in the cost restructuring and will increase the cost of goods which results in reduction of supply</p>
+						<div id="currentproduct"></div>
+						<div id="currentlocation"></div>
+						<div id="currentprice"></div>
+						<input id="fuelprice" type="button" value="Click to get a new fuel price."></button>
+					</div>
 				</div>
 	        </div>
 			<div class="graphControlWrapper">
@@ -186,14 +202,14 @@
 			<canvas id="dataChart"></canvas>
 		</div>
 	</div>
-	<script src="https://code.jquery.com/jquery-3.7.0.slim.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    	<script language="javascript">
 
     	// Equilibrium Price Equations:
     	//   Qsupply = Msupply * price + Bsupply
 		//   Qdemand = Mdemand * price + Bdemand
-		$('#initalDemand').addClass("below");
+
     	let Mdemand = -1000;
     	let Bdemand = 10000;
     	let Msupply = 0; // what if ABC can hire more people when price goes up? 
@@ -210,6 +226,10 @@
 			"supply":[],
 			"demand":[],
 			"messages":[]}
+		let apiData = {
+			results:[],
+			convertedObjects:[]
+		};
 		let revenueObject = {};
 
 		const priceOptions = document.getElementsByName("price");
@@ -240,6 +260,7 @@
 
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
+		document.getElementById("fuelprice").addEventListener("change", pickRandomPrice );
 		const initalDemandElement = document.getElementById("initalDemand");
 		initalDemandElement.addEventListener("change", initalDemandChanged);
 		const demandChangeElement = document.getElementById("demandChange");
@@ -339,7 +360,7 @@
 			revenue = revenueObject[price].revenue;
 
 			if (revenue === maxRevenue) {
-				message = "This is the equilibrium price"
+				message = "This is the equilibrium price<br>(point with maximum revenue)"
 			}
 			else{
 				message = chartData.messages[price-1];
@@ -457,6 +478,27 @@
 			}
 			displayMessage();
 		}
+		function pickRandomPrice(){
+			let index = Math.floor( 100 * Math.random());
+
+			document.getElementById("currentproduct").innerHTML=`${apiData.convertedObjects[index].name}`
+			document.getElementById("currentlocation").innerHTML=`${apiData.convertedObjects[index].location}`
+			document.getElementById("currentprice").innerHTML=`${apiData.convertedObjects[index].price}`
+		}
+		$.ajax({url: "https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[duoarea][]=SCO&facets[duoarea][]=SFL&facets[duoarea][]=SMA&facets[duoarea][]=SMN&facets[duoarea][]=SNY&facets[duoarea][]=SOH&facets[duoarea][]=STX&facets[duoarea][]=SWA&facets[duoarea][]=Y05LA&facets[duoarea][]=Y05SF&facets[duoarea][]=Y35NY&facets[duoarea][]=Y44HO&facets[duoarea][]=Y48SE&facets[duoarea][]=YBOS&facets[duoarea][]=YCLE&facets[duoarea][]=YDEN&facets[duoarea][]=YMIA&facets[duoarea][]=YORD&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&offset=0&api_key=19lwsCV1FzUEiTwVJzm1Zz2iiz1ggy04K3UKhexP&length=100", 
+		success: function(result){
+			console.log(result);
+			apiData.results = result.response.data;
+			apiData.convertedObjects = apiData.results.map((entry) => {
+				return {
+					price:entry["value"],
+					name: entry["product-name"],
+					location: entry["area-name"]
+				}
+			})
+
+			pickRandomPrice();
+		}});
 		//set initalstate of localStorage as well.
 		initalizeLocalStorageVariables();
 		//this is to set inital state of the graph without clicks
