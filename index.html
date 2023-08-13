@@ -59,7 +59,7 @@
 		.chartWrapper{
 			position: relative;
 			margin: auto;
-			height: 50vh;
+			height: 50vw;
 		}
 		.graphControlWrapper input{
 			width: 125px;
@@ -70,12 +70,11 @@
 		.inputLabel{
 			padding-left: 32px;
 		}
-		.slider,.range{
-			width:75vh;
+		.slider,.range,.numbers{
+			width:90vw;
 		}
 		.numbers{
 			padding-left:3px;
-			width:75vh;
 			display:flex;
 			justify-content: space-between;
 
@@ -102,9 +101,10 @@
 			background: white;
 			border: #f53c3c 1px solid;
 			padding: 10px 10px;
-			margin: 10px 0px;
 			text-transform: uppercase;
 			width:340px;
+            margin: auto;
+            text-align: center;
 		}
 		#calculate{
 			height:45px;
@@ -115,7 +115,7 @@
         }
 		@media screen and (max-width: 800px) {
 			.numbers,.slider,.range{
-			    width: 55vh;
+			    width: 85vw;
 			}
 		}
 		@media screen and (max-width: 700px){
@@ -128,11 +128,6 @@
                 margin-top:8px;
             }
         }
-		@media screen and (max-width: 625px) {
-			.numbers,.slider,.range{
-                width: 40vh;
-            }
-		}
         @media screen and (max-width: 593px) {
             .nomargintop{
                 margin-top:22px;
@@ -143,7 +138,7 @@
         }
 		@media screen and (max-width: 500px) {
 			.numbers,.slider,.range{
-			    width: 30vh;
+			    width: 80vw;
 		    }
             .inputLabel{
 			    padding-left:0px;
@@ -156,7 +151,7 @@
 		}
 		@media screen and (max-width: 400px) {
 			.numbers,.slider,.range{
-                width: 25vh;
+                width: 75vw;
             }
 		}
         @media screen and (max-width: 375px) {
@@ -287,25 +282,19 @@
 				}
 			});
 
-    	document.getElementById("calculate").addEventListener("click", calculateOutput);
-		document.getElementById("price").addEventListener("change", updateRange);
-		document.getElementById("fuelprice").addEventListener("click", pickRandomPrice );
-		const initialDemandElement = document.getElementById("initialDemand");
-		initialDemandElement.addEventListener("change", initialDemandChanged);
-		const demandChangeElement = document.getElementById("demandChange");
-		demandChangeElement.addEventListener("change", demandChangeUpdated);
-		const initialSupplyElement = document.getElementById("initialSupply");
-		initialSupplyElement.addEventListener("change", initialSupplyChanged);
-		const supplyChangeElement = document.getElementById("supplyChange")
-		supplyChangeElement.addEventListener("change", supplyChangeUpdated);
+        const initialDemandElement = document.getElementById("initialDemand");
+        const demandChangeElement = document.getElementById("demandChange");
+        const initialSupplyElement = document.getElementById("initialSupply");
+        const supplyChangeElement = document.getElementById("supplyChange");
 
-		function updateRange (){
+		const updateRange =  () => {
+            //This is a helper function to fire onchange event by the range input.
 			maxRevenue = calculateMaxRevenue(0,priceOptions);
-			//chart reset to make sure that this fires on submit.
 			displayMessage();
+            //Note that this does not update the chart.
 		}
-		function addData(chart,labels, newData) {
-			//Chart.js helper function that adds data to the chart
+		const addData = (chart,labels, newData) => {
+			//Chart.js helper function that adds data to the chart using 3rd party JS.
 			chart.data.labels = labels;
 			chart.data.datasets.forEach((dataset) => {
 				if(dataset.label === 'Revenue'){
@@ -321,15 +310,18 @@
 			chart.update();
 		}
 
-		function removeData(chart) {
-			//Chart.js helper function that removes data from the chart
+		const removeData = (chart) => {
+			//Chart.js helper function that removes data from the chart using 3rd party JS
 			chart.data.labels = [];
 			chart.data.datasets.forEach((dataset) => {
 				dataset.data = [];
 			});
 			chart.update();
 		}
-		function initializeLocalStorageVariables(){
+		const initializeLocalStorageVariables = () => {
+            //This function is necessary to initalize new data into local storage, 
+            //or update your local variables to be that of last session, using localstorage.
+
 			if(!localStorage.getItem("initialDemand")){
 				localStorage.setItem("initialDemand",Bdemand);
 			}
@@ -362,8 +354,8 @@
 				supplyChangeElement.value = Msupply;
 			}
 		}
-		function validateInput(string){
-			//must input an integer
+		const validateInput = (string) =>{
+            //This is a regex check for validating an input to assure it's an integer.
 			var regex=/^[0-9-]+$/;
 			if (!string.match(regex))
 			{
@@ -373,8 +365,8 @@
 			disclaimer = ""
 			return true;
 		}
-		function validateInputs(){
-			//check all 4 inputs that are needed for the graph and check for incorrect inputs.
+		const validateInputs = () => {
+            //this is the outer function that checks to assure all 4 inputs are correct format before generating a graph.
 			if(validateInput(initialDemandElement.value) && validateInput(demandChangeElement.value) && validateInput(initialSupplyElement.value) && validateInput(supplyChangeElement.value)){
 				return true;
 			}
@@ -382,26 +374,29 @@
 				return false;
 			}
 		}
-		function displayMessage(){
+		const displayMessage = () => {
+            //This function builds off the code provided to display a message concerning what price you pick for the Widget and it's stats.
 			price = priceOptions[0].value;
 			consumption = revenueObject[price].consumption;
 			supply = revenueObject[price].supply;
 			revenue = revenueObject[price].revenue;
 
 			if (revenue === maxRevenue) {
+                //This is the condition that proves the equilibrium point.
 				message = "This is the equilibrium price<br>(point with maximum revenue)"
 			}
 			else{
 				message = chartData.messages[price-1];
 			}
-
+            //data getting input into html
 			document.getElementById("result").innerHTML =
 			`<div>XYZ Supply: ${supply}/month</div>
 			<div>Price per Widget: $${price} per unit</div>
 			<div>XYZ Widgets sold: ${consumption}/month</div>
 			<div>Revenue: ${revenue}/month</div>
 			<div>${message}</div>`;
-
+            
+            //Display disclaimer if there is invalid input.
 			let disclaimerElement = document.getElementById("disclaimer");
 			if(disclaimer !==''){
 				disclaimerElement.style.display = "block";
@@ -413,6 +408,7 @@
 			`<div>${disclaimer}</div>`;
 		}
 		const calculateMaxRevenue = (maxRevenue,priceOptions) => {
+            //This removes any data from the object holding arrays of data created by the core function.
 			emptyChartData();
 			//Inner function that calculates the maxRevenue and saves all the other variables so there is no need to recalculate later.
 			let minimum = parseInt(priceOptions[0].min);
@@ -423,6 +419,7 @@
 				let supply = i * Msupply + Bsupply;
 				message = "";
 				chartData.demand.push(consumption);//placing this here to fire first before revenue calculation.
+                //This is so you see the whole demand curve not just consumption.
 				if (consumption >= supply) {
 					consumption = supply;
 					message = "ABC Company cannot make enough XYZ Widgets";
@@ -432,6 +429,7 @@
 					message = "No one will buy XYZ Widgets at this price";
 				}
 				let revenue = consumption * i;
+                //No sales at a loss in this demo.
 				if(revenue < 0){
 					revenue = 0;
 				}
@@ -453,28 +451,30 @@
 			}
 			return maxRevenue;
 		}
-		function calculateOutput() {
+		const calculateOutput = () => {
+            //This is the onclick event function that fires all the functions in a refresh loop.
+            //This is calculate, reset chart data, and display message in HTML using dom minipulation.
 			maxRevenue = calculateMaxRevenue(0,priceOptions);
-			//chart reset to make sure that this fires on submit.
 			resetChart();
 			displayMessage();
 		}
-
-
-		function emptyChartData(){
+		const emptyChartData = () => {
+            //emptys all the data needed for Chart.js stored in local variables.
 			chartData.revenue = [];
 			chartData.supply = [];
 			chartData.demand = [];
 			chartData.labels = [];
 			chartData.messages = [];
 		}
-
-		function resetChart(){
+		const resetChart = () => {
+            //This is a necessary loop to reset data needed for Chart.js.
+            //You must remove and add using the Chart.update() function from Chart.js
 			removeData(myChart);
 			calculateMaxRevenue(0,priceOptions);
 			addData(myChart,chartData.labels,chartData);
 		}
-		function initialDemandChanged(event){
+		const initialDemandChanged = (event) => {
+            //Updates localstorage if the initial demand input changes.
 			if(validateInputs()){
 				Bdemand = parseInt(event.target.value);
 				localStorage.setItem("initialDemand",Bdemand)
@@ -482,7 +482,8 @@
 			}
 			displayMessage();
 		}
-		function demandChangeUpdated(event){
+		const demandChangeUpdated =(event) => {
+            //Updates localstorage if the demand change input changes.
 			if(validateInputs()){
 				Mdemand = parseInt(event.target.value);
 				localStorage.setItem("demandChange",Mdemand)
@@ -491,7 +492,8 @@
 			displayMessage();
 		}
 
-		function initialSupplyChanged(event){
+		const initialSupplyChanged = (event) => {
+            //Updates localstorage if the initial supply input changes.
 			if(validateInputs()){
 				Bsupply = parseInt(event.target.value);
 				localStorage.setItem("initialSupply",Bsupply)
@@ -499,7 +501,8 @@
 			}
 			displayMessage();
 		}
-		function supplyChangeUpdated(event){
+		const supplyChangeUpdated = (event) => {
+            //Updates localstorage if the supply change input changes.
 			if(validateInputs()){
 				Msupply = parseInt(event.target.value);
 				localStorage.setItem("supplyChange",Msupply)
@@ -507,15 +510,17 @@
 			}
 			displayMessage();
 		}
-		function pickRandomPrice(){
+		const pickRandomPrice = () => {
+            //This Function picks a random 1-100 number to display part of the data returned from the api call.
 			let index = Math.floor( 100 * Math.random());
 			document.getElementById("currentproduct").innerHTML=`${apiData.convertedObjects[index].name}`
 			document.getElementById("currentlocation").innerHTML=`${apiData.convertedObjects[index].location}`
 			document.getElementById("currentprice").innerHTML=`$${apiData.convertedObjects[index].price} / gal`
 		}
-		$.ajax({url: "https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[duoarea][]=SCO&facets[duoarea][]=SFL&facets[duoarea][]=SMA&facets[duoarea][]=SMN&facets[duoarea][]=SNY&facets[duoarea][]=SOH&facets[duoarea][]=STX&facets[duoarea][]=SWA&facets[duoarea][]=Y05LA&facets[duoarea][]=Y05SF&facets[duoarea][]=Y35NY&facets[duoarea][]=Y44HO&facets[duoarea][]=Y48SE&facets[duoarea][]=YBOS&facets[duoarea][]=YCLE&facets[duoarea][]=YDEN&facets[duoarea][]=YMIA&facets[duoarea][]=YORD&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&offset=0&api_key=19lwsCV1FzUEiTwVJzm1Zz2iiz1ggy04K3UKhexP&length=100", 
+        //API call to eia.gov to get up to date gasoline prices in the USA.
+		$.ajax({
+            url: "https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[duoarea][]=SCO&facets[duoarea][]=SFL&facets[duoarea][]=SMA&facets[duoarea][]=SMN&facets[duoarea][]=SNY&facets[duoarea][]=SOH&facets[duoarea][]=STX&facets[duoarea][]=SWA&facets[duoarea][]=Y05LA&facets[duoarea][]=Y05SF&facets[duoarea][]=Y35NY&facets[duoarea][]=Y44HO&facets[duoarea][]=Y48SE&facets[duoarea][]=YBOS&facets[duoarea][]=YCLE&facets[duoarea][]=YDEN&facets[duoarea][]=YMIA&facets[duoarea][]=YORD&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&offset=0&api_key=19lwsCV1FzUEiTwVJzm1Zz2iiz1ggy04K3UKhexP&length=100", 
 		success: function(result){
-			console.log(result);
 			apiData.results = result.response.data;
 			apiData.convertedObjects = apiData.results.map((entry) => {
 				return {
@@ -526,7 +531,23 @@
 			})
 
 			pickRandomPrice();
-		}});
+		},
+            error:function (error){
+                console.log("there was an error, it might have to do with the APIkey or a System outage.")
+            }
+        });
+        const setupEventListeners = () => {
+            //set up all the event Listeners after all the variables are initalized.
+            document.getElementById("calculate").addEventListener("click", calculateOutput);
+            document.getElementById("price").addEventListener("change", updateRange);
+            document.getElementById("fuelprice").addEventListener("click", pickRandomPrice );
+            initialDemandElement.addEventListener("change", initialDemandChanged);
+            demandChangeElement.addEventListener("change", demandChangeUpdated);
+            initialSupplyElement.addEventListener("change", initialSupplyChanged);
+            supplyChangeElement.addEventListener("change", supplyChangeUpdated);
+        }
+        //one-time setup
+        setupEventListeners();
 		//set initialstate of localStorage as well.
 		initializeLocalStorageVariables();
 		//this is to set initial state of the graph without clicks
