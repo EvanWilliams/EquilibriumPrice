@@ -59,7 +59,7 @@
 		.chartWrapper{
 			position: relative;
 			margin: auto;
-			height: 50vw;
+			height:425px;
 		}
 		.graphControlWrapper input{
 			width: 125px;
@@ -71,7 +71,7 @@
 			padding-left: 32px;
 		}
 		.slider,.range,.numbers{
-			width:90vw;
+			width:805px;
 		}
 		.numbers{
 			padding-left:3px;
@@ -113,10 +113,18 @@
         #currentprice{
             margin-bottom:8px;
         }
+        @media screen and (max-width: 900px) {
+            .numbers,.slider,.range{
+			    width: 90vw;
+			}
+        }
 		@media screen and (max-width: 800px) {
 			.numbers,.slider,.range{
 			    width: 85vw;
 			}
+            .chartWrapper{
+                width:50vw;
+            }
 		}
 		@media screen and (max-width: 700px){
 			.imageDescription{
