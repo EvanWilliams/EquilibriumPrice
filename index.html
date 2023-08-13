@@ -27,7 +27,7 @@
 			box-shadow: none;
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
 		}
 		.nomargintop{
 			margin-top:0px;
@@ -94,6 +94,7 @@
 			grid-template-rows: 36px 36px 36px 36px 36px;
 			grid-row-gap: 5px;
 			align-items: center;
+            margin: 0px 8px;
 		}
 		#disclaimer{
 			display:none;
@@ -109,9 +110,12 @@
 			height:45px;
 			max-width:275px;
 		}
+        #currentprice{
+            margin-bottom:8px;
+        }
 		@media screen and (max-width: 800px) {
 			.numbers,.slider,.range{
-			width: 55vh;
+			    width: 55vh;
 			}
 		}
 		@media screen and (max-width: 700px){
@@ -119,32 +123,50 @@
 				grid-column: 1 / span 2;
 			}
 		}
-    	@media screen and (max-width: 700px) {
-		  input {
-		    display:block;
-		  }
-		}
+        @media screen and (max-width: 660px) {
+            .nomargintop{
+                margin-top:8px;
+            }
+        }
 		@media screen and (max-width: 625px) {
 			.numbers,.slider,.range{
-			width: 40vh;
+                width: 40vh;
+            }
 		}
-		}
+        @media screen and (max-width: 593px) {
+            .nomargintop{
+                margin-top:22px;
+            }
+            #result{
+                margin:0px;
+            }
+        }
 		@media screen and (max-width: 500px) {
 			.numbers,.slider,.range{
-			width: 30vh;
-		}	.inputLabel{
-			padding-left:0px;
-		}
+			    width: 30vh;
+		    }
+            .inputLabel{
+			    padding-left:0px;
+		    }
 		}
 		@media screen and (max-width: 425px) {
-		  .chartContainer {
-		    display: none;
-		  }
+		    .chartContainer {
+		        display: none;
+		    }
 		}
 		@media screen and (max-width: 400px) {
 			.numbers,.slider,.range{
-			width: 25vh;
+                width: 25vh;
+            }
 		}
+        @media screen and (max-width: 375px) {
+			.container{
+			    margin:0px;
+		    }
+            .container.innercontainer{
+                grid-template-columns: 1fr;
+            }
+
 		}
 		
     </style>
@@ -193,9 +215,9 @@
 				</div>
 	        </div>
 			<div class="graphControlWrapper">
-				<div class="inputLabel">Inital Demand (in Units)</div><input type="text" value=10000 id="initalDemand">
+				<div class="inputLabel">Initial Demand (in Units)</div><input type="text" value=10000 id="initialDemand">
 				<div class="inputLabel">Decrease in Demand per Dollar increase in price</div><input type="text" value=-1000 id="demandChange">
-				<div class="inputLabel">Inital Supply (in Units)</div><input type="text" value=8000 id="initalSupply">
+				<div class="inputLabel">Initial Supply (in Units)</div><input type="text" value=8000 id="initialSupply">
 				<div class="inputLabel">Increase in Supply per Dollar increase in price</div><input type="text" value=0 id="supplyChange">
 			</div>
 			<div id="disclaimer"></div>
@@ -268,12 +290,12 @@
     	document.getElementById("calculate").addEventListener("click", calculateOutput);
 		document.getElementById("price").addEventListener("change", updateRange);
 		document.getElementById("fuelprice").addEventListener("click", pickRandomPrice );
-		const initalDemandElement = document.getElementById("initalDemand");
-		initalDemandElement.addEventListener("change", initalDemandChanged);
+		const initialDemandElement = document.getElementById("initialDemand");
+		initialDemandElement.addEventListener("change", initialDemandChanged);
 		const demandChangeElement = document.getElementById("demandChange");
 		demandChangeElement.addEventListener("change", demandChangeUpdated);
-		const initalSupplyElement = document.getElementById("initalSupply");
-		initalSupplyElement.addEventListener("change", initalSupplyChanged);
+		const initialSupplyElement = document.getElementById("initialSupply");
+		initialSupplyElement.addEventListener("change", initialSupplyChanged);
 		const supplyChangeElement = document.getElementById("supplyChange")
 		supplyChangeElement.addEventListener("change", supplyChangeUpdated);
 
@@ -307,13 +329,13 @@
 			});
 			chart.update();
 		}
-		function initalizeLocalStorageVariables(){
-			if(!localStorage.getItem("initalDemand")){
-				localStorage.setItem("initalDemand",Bdemand);
+		function initializeLocalStorageVariables(){
+			if(!localStorage.getItem("initialDemand")){
+				localStorage.setItem("initialDemand",Bdemand);
 			}
 			else{
-				Bdemand = parseInt(localStorage.getItem("initalDemand"));
-				initalDemandElement.value = Bdemand;
+				Bdemand = parseInt(localStorage.getItem("initialDemand"));
+				initialDemandElement.value = Bdemand;
 			}
 
 			if(!localStorage.getItem("demandChange")){
@@ -324,12 +346,12 @@
 				demandChangeElement.value = Mdemand;
 			}
 
-			if(!localStorage.getItem("initalSupply")){
-				localStorage.setItem("initalSupply",Bsupply);
+			if(!localStorage.getItem("initialSupply")){
+				localStorage.setItem("initialSupply",Bsupply);
 			}
 			else{
-				Bsupply = parseInt(localStorage.getItem("initalSupply"));
-				initalSupplyElement.value = Bsupply;
+				Bsupply = parseInt(localStorage.getItem("initialSupply"));
+				initialSupplyElement.value = Bsupply;
 			}
 
 			if(!localStorage.getItem("supplyChange")){
@@ -353,7 +375,7 @@
 		}
 		function validateInputs(){
 			//check all 4 inputs that are needed for the graph and check for incorrect inputs.
-			if(validateInput(initalDemandElement.value) && validateInput(demandChangeElement.value) && validateInput(initalSupplyElement.value) && validateInput(supplyChangeElement.value)){
+			if(validateInput(initialDemandElement.value) && validateInput(demandChangeElement.value) && validateInput(initialSupplyElement.value) && validateInput(supplyChangeElement.value)){
 				return true;
 			}
 			else{
@@ -452,10 +474,10 @@
 			calculateMaxRevenue(0,priceOptions);
 			addData(myChart,chartData.labels,chartData);
 		}
-		function initalDemandChanged(event){
+		function initialDemandChanged(event){
 			if(validateInputs()){
 				Bdemand = parseInt(event.target.value);
-				localStorage.setItem("initalDemand",Bdemand)
+				localStorage.setItem("initialDemand",Bdemand)
 				resetChart();
 			}
 			displayMessage();
@@ -469,10 +491,10 @@
 			displayMessage();
 		}
 
-		function initalSupplyChanged(event){
+		function initialSupplyChanged(event){
 			if(validateInputs()){
 				Bsupply = parseInt(event.target.value);
-				localStorage.setItem("initalSupply",Bsupply)
+				localStorage.setItem("initialSupply",Bsupply)
 				resetChart();
 			}
 			displayMessage();
@@ -489,7 +511,7 @@
 			let index = Math.floor( 100 * Math.random());
 			document.getElementById("currentproduct").innerHTML=`${apiData.convertedObjects[index].name}`
 			document.getElementById("currentlocation").innerHTML=`${apiData.convertedObjects[index].location}`
-			document.getElementById("currentprice").innerHTML=`${apiData.convertedObjects[index].price}`
+			document.getElementById("currentprice").innerHTML=`$${apiData.convertedObjects[index].price} / gal`
 		}
 		$.ajax({url: "https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[duoarea][]=SCO&facets[duoarea][]=SFL&facets[duoarea][]=SMA&facets[duoarea][]=SMN&facets[duoarea][]=SNY&facets[duoarea][]=SOH&facets[duoarea][]=STX&facets[duoarea][]=SWA&facets[duoarea][]=Y05LA&facets[duoarea][]=Y05SF&facets[duoarea][]=Y35NY&facets[duoarea][]=Y44HO&facets[duoarea][]=Y48SE&facets[duoarea][]=YBOS&facets[duoarea][]=YCLE&facets[duoarea][]=YDEN&facets[duoarea][]=YMIA&facets[duoarea][]=YORD&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&offset=0&api_key=19lwsCV1FzUEiTwVJzm1Zz2iiz1ggy04K3UKhexP&length=100", 
 		success: function(result){
@@ -505,9 +527,9 @@
 
 			pickRandomPrice();
 		}});
-		//set initalstate of localStorage as well.
-		initalizeLocalStorageVariables();
-		//this is to set inital state of the graph without clicks
+		//set initialstate of localStorage as well.
+		initializeLocalStorageVariables();
+		//this is to set initial state of the graph without clicks
 		calculateOutput();
 	
     </script>
